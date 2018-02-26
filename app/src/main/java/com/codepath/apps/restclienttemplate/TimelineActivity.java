@@ -204,6 +204,48 @@ private SwipeRefreshLayout swipeContainer;
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
         LoadData(offset);
     }
+    private void SearchTweet(String query){
+        client.SearchgetHomeTimeline(new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("TwitterClient" , response.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                //   Log.d("TwitterClient" , response.toString());
+                for(int i = 0 ; i< response.length();i ++){
+                    try {
+                        Tweet tweet = Tweet.fromJson(response.getJSONObject(i));
+                        tweets.add(tweet);
+                        tweetAdapter.notifyItemInserted(tweets.size() - 1);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.d("TwitterClient", responseString);
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("TwitterClient", errorResponse.toString());
+                throwable.printStackTrace();
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Log.d("TwitterClient", errorResponse.toString());
+                throwable.printStackTrace();
+            }
+        }, query);
+    }
     private void LoadData(int page){
         client.moregetHomeTimeline(new JsonHttpResponseHandler(){
             @Override
@@ -304,6 +346,55 @@ private SwipeRefreshLayout swipeContainer;
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.timeline, menu);
+        // MenuItem item = menu.findItem(R.id.menu_item_share);
+        //    ShareActionProvider miShare = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        // Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        ///  shareIntent.setType("text/plain");
+        //  get reference to WebView
+        //    WebView wvArticle = (WebView) findViewById(R.id.wArticle);
+        //   pass in the URL currently being used by the WebView
+        //   shareIntent.putExtra(Intent.EXTRA_TEXT, wvArticle.getUrl());
+        //   miShare.setShareIntent(shareIntent);
 
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            public boolean onQueryTextSubmit(String query) {
+                // perform query here
+
+                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+
+                searchView.clearFocus();
+                if (isNetworkAvailable()){
+                    if(isOnline()){
+                        SearchTweet(query);
+                    }
+                }
+
+
+                return true;
+            }
+
+
+            public boolean onQueryTextChange(String newText) {
+                // fetchArticles(newText);
+                return false;
+            }
+        });
+
+
+
+
+
+
+        return super.onCreateOptionsMenu(menu);
+    }
 
 }
