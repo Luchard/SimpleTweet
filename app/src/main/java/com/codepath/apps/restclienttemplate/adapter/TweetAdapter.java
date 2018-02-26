@@ -35,7 +35,25 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         return viewHolder;
 
     }
+    public void clear() {
 
+        mTwests.clear();
+
+        notifyDataSetChanged();
+
+    }
+
+
+
+// Add a list of items -- change to type used
+
+    public void addAll(List<Tweet> list) {
+
+        mTwests.addAll(list);
+
+        notifyDataSetChanged();
+
+    }
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Tweet tweet = mTwests.get(position);
@@ -49,16 +67,45 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         return mTwests.size();
     }
 
-    public static  class ViewHolder extends RecyclerView.ViewHolder {
+    private OnItemClickListener listener;
+    // Define the listener interface
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
+    // Define the method that allows the parent activity or fragment to define the listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView ivProfileImage;
         public TextView tvUsername;
         public TextView tvBody;
 
-        public ViewHolder(View itemView){
+        public ViewHolder(final View itemView){
             super(itemView);
             ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImage);
             tvUsername = (TextView) itemView.findViewById(R.id.tvUserName);
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(itemView, position);
+                        }
+                    }
+                    // final Contact contact = (Contact)v.getTag();
+                    //   if (contact != null) {
+
+                    // Fire an intent when a contact is selected
+                    // Pass contact object in the bundle and populate details activity.
+                    // }
+                }
+            });
         }
     }
 }
