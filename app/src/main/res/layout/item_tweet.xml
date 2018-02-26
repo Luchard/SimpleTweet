@@ -34,4 +34,14 @@
         android:autoLink="all"
         android:linksClickable="true"
         android:text="TextView" />
+
+    <TextView
+        android:id="@+id/tvCreated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/tvBody"
+        android:layout_below="@+id/tvBody"
+        android:text="TextView" />
+
 </RelativeLayout>
