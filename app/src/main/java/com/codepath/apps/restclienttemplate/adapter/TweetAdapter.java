@@ -1,6 +1,8 @@
 package com.codepath.apps.restclienttemplate.adapter;
 
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -8,7 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.R;
@@ -18,6 +22,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+
+import static java.security.AccessController.getContext;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
  * Created by luchi on 2/23/2018.
@@ -59,13 +67,64 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
     }
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         Tweet tweet = mTwests.get(position);
         holder.tvUsername.setText(tweet.user.name);
         holder.tvBody.setText(tweet.body);
         holder.tvCreated.setText(getRelativeTimeAgo(tweet.createdAt));
 
-        Glide.with(context).load(tweet.user.profileImageUrl).into(holder.ivProfileImage);
+        Glide.with(context).load(tweet.user.profileImageUrl)
+                .bitmapTransform(new RoundedCornersTransformation(getContext(), 30, 10))
+                .bitmapTransform(new CropCircleTransformation(getContext()))
+                .into(holder.ivProfileImage);
+
+
+
+
+
+/*        if (tweet.getTweet_media_type() != null && tweet.getTweet_media_url() != null) {
+
+            if (tweet.getTweet_media_type().equals("video")) {
+
+                holder.img_tweet.setVisibility(View.GONE);
+
+                holder.video_tweet.setVisibility(View.VISIBLE);
+                Uri vidUri = Uri.parse(tweet.getTweet_media_url());
+                holder.video_tweet.setVideoURI(vidUri);
+                holder.video_tweet.setBackgroundResource(R.drawable.tw__ic_tweet_photo_error_light);
+
+                MediaController vidControl = new MediaController(getContext());
+                vidControl.setAnchorView(holder.video_tweet);
+                vidControl.setVisibility(View.GONE);
+                holder.video_tweet.setMediaController(vidControl);
+                holder.video_tweet.requestFocus();
+                holder.video_tweet.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        holder.video_tweet.start();
+                    }
+                });
+
+                holder.video_tweet.start();
+
+            }else {
+
+                holder.video_tweet.setVisibility(View.GONE);
+
+                holder.img_tweet.setVisibility(View.VISIBLE);
+                Glide.with(getContext())
+                        .load(tweet.getTweet_media_url())
+                        .into(holder.img_tweet);
+            }
+
+        }else {
+            holder.img_tweet.setVisibility(View.GONE);
+            holder.video_tweet.setVisibility(View.GONE);
+        }*/
+    }
+
+    private Context getContext() {
+        return context;
     }
 
     public String getRelativeTimeAgo(String rawJsonDate) {
@@ -105,6 +164,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         public TextView tvUsername;
         public TextView tvBody;
         public TextView tvCreated;
+        public ImageView img_tweet;
+        public VideoView video_tweet;
 
         public ViewHolder(final View itemView){
             super(itemView);
@@ -112,6 +173,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             tvUsername = (TextView) itemView.findViewById(R.id.tvUserName);
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
             tvCreated = (TextView) itemView.findViewById(R.id.tvCreated);
+            img_tweet = (ImageView) itemView.findViewById(R.id.tweet_adapter_img_tweet);
+            video_tweet=(VideoView) itemView.findViewById(R.id.tweet_adapter_video_tweet);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
@@ -108,7 +109,7 @@ private SwipeRefreshLayout swipeContainer;
 
                 // once the network request has completed successfully.
 
-                fetchTimelineAsync(0);
+                fetchTimelineAsync(1);
 
             }
 
@@ -161,41 +162,63 @@ private SwipeRefreshLayout swipeContainer;
 
         // getHomeTimeline is an example endpoint.
 
-        client.getHomeTimeline(new JsonHttpResponseHandler() {
+        client.moregetHomeTimeline(new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("TwitterClient" , response.toString());
+            }
 
-            public void onSuccess(JSONArray json) {
-
-                // Remember to CLEAR OUT old items before appending in the new ones
-
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                //   Log.d("TwitterClient" , response.toString());
                 tweetAdapter.clear();
 
-                // ...the data has come back, add new items to your adapter...
+                for(int i = 0 ; i< response.length();i ++){
+                    try {
+                        Tweet tweet = Tweet.fromJson(response.getJSONObject(i));
+                        tweets.add(tweet);
+                        tweetAdapter.notifyItemInserted(tweets.size() - 1);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-                  //  try {
-                   //     Tweet tweet = Tweet.fromJson(json.getJSONObject());
-                  //      tweets.add(tweet);
-                   //     tweetAdapter.notifyItemInserted(tweets.size() - 1);
-                  //  } catch (JSONException e) {
-                  //      e.printStackTrace();
-                   // }
+                int curSize = tweetAdapter.getItemCount();
 
                 tweetAdapter.addAll(tweets);
-
-                // Now we call setRefreshing(false) to signal refresh has finished
-
+                tweetAdapter.notifyItemRangeChanged(curSize, tweets.size());
                 swipeContainer.setRefreshing(false);
 
-            }
 
-
-
-            public void onFailure(Throwable e) {
-
-                Log.d("DEBUG", "Fetch timeline error: " + e.toString());
 
             }
 
-        });
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.d("TwitterClient", responseString);
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("TwitterClient", errorResponse.toString());
+                throwable.printStackTrace();
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Log.d("TwitterClient", errorResponse.toString());
+                throwable.printStackTrace();
+            }
+        }, page);
+
+
+
+
+
+
+
 
     }
 
@@ -260,6 +283,8 @@ private SwipeRefreshLayout swipeContainer;
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 //   Log.d("TwitterClient" , response.toString());
+
+
                 for(int i = 0 ; i< response.length();i ++){
                     try {
                         Tweet tweet = Tweet.fromJson(response.getJSONObject(i));
@@ -269,6 +294,14 @@ private SwipeRefreshLayout swipeContainer;
                         e.printStackTrace();
                     }
                 }
+
+                int curSize = tweetAdapter.getItemCount();
+
+
+                tweetAdapter.notifyItemRangeChanged(curSize, tweets.size());
+
+
+
 
             }
 
