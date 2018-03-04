@@ -23,7 +23,7 @@ import com.loopj.android.http.RequestParams;
  */
 public class TwitterClient extends OAuthBaseClient {
 	public static final BaseApi REST_API_INSTANCE = TwitterApi.instance(); // Change this
-	public static final String REST_URL = "https://api.twitter.com/1.1/statuses/home_timeline.json"; // Change this, base API URL
+	public static final String REST_URL = "https://api.twitter.com/1.1"; // Change this, base API URL
 	public static final String REST_CONSUMER_KEY = "K9V7kXkwzBSSeCAhw2H1R3MEC";       // Change this
 	public static final String REST_CONSUMER_SECRET = "UFtJXmmJZ2VmcCj8GbAa9kIgQ1EfmsBauFFfW5InaRvGffwjwh"; // Change this
 
@@ -44,7 +44,7 @@ public class TwitterClient extends OAuthBaseClient {
 	// CHANGE THIS
 	// DEFINE METHODS for different API endpoints here
 	public void getHomeTimeline(AsyncHttpResponseHandler handler) {
-		String apiUrl = REST_URL;
+		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		// Can specify query string params directly or through RequestParams.
 		RequestParams params = new RequestParams();
 		params.put("count", "25");
@@ -52,8 +52,39 @@ public class TwitterClient extends OAuthBaseClient {
 
 		client.get(apiUrl, params, handler);
 	}
+
+	public void getMentionsTimeline(AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+		// Can specify query string params directly or through RequestParams.
+		RequestParams params = new RequestParams();
+		params.put("count", "25");
+		params.put("since_id", 1);
+
+		client.get(apiUrl, params, handler);
+	}
+
+	public void getUserTimeline(String screenName, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/user_timeline.json");
+		// Can specify query string params directly or through RequestParams.
+		RequestParams params = new RequestParams();
+		params.put("count", "25");
+		params.put("screen_name",screenName);
+
+		client.get(apiUrl, params, handler);
+	}
+
+
+	public void getUserInfoTimeline(AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("account/verify_credentials.json");
+		// Can specify query string params directly or through RequestParams.
+
+
+		client.get(apiUrl, null, handler);
+	}
+
+
 	public void moregetHomeTimeline(AsyncHttpResponseHandler handler, int page) {
-		String apiUrl = REST_URL;
+		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		// Can specify query string params directly or through RequestParams.
 		RequestParams params = new RequestParams();
 		params.put("page", page);
@@ -61,7 +92,7 @@ public class TwitterClient extends OAuthBaseClient {
 	}
 
 	public void SearchgetHomeTimeline(AsyncHttpResponseHandler handler, String query) {
-		String apiUrl = REST_URL;
+		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		// Can specify query string params directly or through RequestParams.
 		RequestParams params = new RequestParams();
 		params.put("q", query);

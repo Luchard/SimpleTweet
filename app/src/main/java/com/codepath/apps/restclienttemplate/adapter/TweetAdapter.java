@@ -34,8 +34,15 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> {
     private List<Tweet> mTwests;
     Context context;
+private TweetAdapterListener mListener;    
+    public interface TweetAdapterListener{
+        public void onItemSelected(View view, int position);
+    }
+
     public TweetAdapter(List<Tweet> tweets){
+
         mTwests = tweets;
+
     }
 
     @Override

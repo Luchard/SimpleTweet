@@ -19,8 +19,8 @@ public class Tweet {
     public long uid;
     public User user;
     public String createdAt;
-   public String tweet_media_url;
-  public  String tweet_media_type;
+    public String tweet_media_url;
+    public  String tweet_media_type;
 
     public static Tweet fromJson(JSONObject jsonObject){
         Tweet tweet = new Tweet();
