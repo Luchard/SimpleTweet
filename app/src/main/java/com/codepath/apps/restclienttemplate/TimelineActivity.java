@@ -136,10 +136,75 @@ public class TimelineActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_timeline, menu);
 
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
+            public boolean onQueryTextSubmit(String query) {
+                // perform query here
+
+                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+              //  querryAll = query;
+                searchView.clearFocus();
+                if (isNetworkAvailable()){
+                    if(isOnline()){
+                      //  fetchArticles(query);
+                        populateTimeline(query);
+                    }
+                }
+
+
+                return true;
+            }
+
+
+            public boolean onQueryTextChange(String newText) {
+                // fetchArticles(newText);
+                return false;
+            }
+        });
 
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void populateTimeline(String query)
+    {
+        client.getSearchTimeline(query, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("TwitterClient" , response.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                //   Log.d("TwitterClient" , response.toString());
+             //  addItems(response);
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.d("TwitterClient", responseString);
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("TwitterClient", errorResponse.toString());
+                throwable.printStackTrace();
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Log.d("TwitterClient", errorResponse.toString());
+                throwable.printStackTrace();
+            }
+        });
+
+
     }
 
 
