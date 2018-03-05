@@ -1,15 +1,26 @@
 package com.codepath.apps.restclienttemplate.fragments;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.TwitterApp;
 import com.codepath.apps.restclienttemplate.TwitterClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -24,8 +35,18 @@ public class HomeTimelineFragment extends TweetsListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         client = TwitterApp.getRestClient();
-        populateTimeline();
+        if (isOnline()){
+            populateTimeline();
+        }else {
+            Toast.makeText(getContext(),"No network connection", Toast.LENGTH_LONG);
+        }
+
     }
+
+
+
+
+
 
     private void populateTimeline()
     {

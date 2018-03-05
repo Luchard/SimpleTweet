@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.adapter.TweetAdapter;
@@ -63,6 +64,7 @@ public class TimelineActivity extends AppCompatActivity {
         ViewPager vpPager = (ViewPager) findViewById(R.id.viewpager);
         vpPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager(), this));
         TabLayout tblayout = (TabLayout) findViewById(R.id.sliding_tabs);
+
         tblayout.setupWithViewPager(vpPager);
 
 
@@ -101,10 +103,32 @@ public class TimelineActivity extends AppCompatActivity {
 
 
 
+    MenuItem miActionProgressItem;
 
 
 
 
+
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
+    }
+
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        // Extract the action-view from the menu item
+        ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        // Return to finish
+        return super.onPrepareOptionsMenu(menu);
+    }
 
 
     @Override
@@ -124,4 +148,6 @@ public class TimelineActivity extends AppCompatActivity {
         i.putExtra("screen_name","luchard11");
         startActivity(i);
     }
+
+
 }
